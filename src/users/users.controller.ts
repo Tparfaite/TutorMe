@@ -20,31 +20,38 @@ export class UsersController {
     ) {}
 
   @Get('getAll')
-  @UseGuards(AuthGuardGuard)
-  async getUsers(@currentUser() user:User) : Promise<User[] | string>{
-    console.log('this is user from decorator',user)
-    let users:User[];
-    users = await this.usersService.findUsers()
-    if(user.role === 'tutor'){
-      const parents = users.filter((userfound)=>userfound.role==='parent');
-      if(!parents.length){
-        console.log("no parent found")
-        return []
-      }
-      return parents;
-
-    }else if(user.role === 'parent'){
-      const tutors = users.filter((userfound)=>userfound.role==='tutor');
-      if(!tutors.length){
-        console.log("no tutor found")
-        return "No tutor found"
-      }
-      return tutors
-    }else{
-     users = await this.usersService.findUsers()
+  async getUsers():Promise<User[] | string> {
+    const users = await this.usersService.findUsers();
     return users
-    }
   }
+
+  // @Get('getAll')
+  // @UseGuards(AuthGuardGuard)
+  // async getUsers(@currentUser() user:User) : Promise<User[] | string>{
+  //   console.log('this is user from decorator',user)
+  //   let users:User[];
+  //   users = await this.usersService.findUsers()
+  //   return users
+  //   if(user.role === 'tutor'){
+  //     const parents = users.filter((userfound)=>userfound.role==='parent');
+  //     if(!parents.length){
+  //       console.log("no parent found")
+  //       return []
+  //     }
+  //     return parents;
+
+  //   }else if(user.role === 'parent'){
+  //     const tutors = users.filter((userfound)=>userfound.role==='tutor');
+  //     if(!tutors.length){
+  //       console.log("no tutor found")
+  //       return "No tutor found"
+  //     }
+  //     return tutors
+  //   }else{
+  //    users = await this.usersService.findUsers()
+  //   return users
+  //   }
+  // }
 
   @Post('create')
   async createUser(@Body() createUserDto:CreateUserDto ){
@@ -110,6 +117,14 @@ export class UsersController {
   async createUserProfile(@Param('id',ParseIntPipe) id:number, @Body() createUserProfileDto:CreateUserProfileDto){
     return await this.usersService.createUserProfile(id,createUserProfileDto)
   }
+
+  @Get(':id')
+  async getUserById(@Param('id',ParseIntPipe) id:number){
+   const user =await this.usersService.findUserById(id)
+   return user
+
+  }
+
 
 
 

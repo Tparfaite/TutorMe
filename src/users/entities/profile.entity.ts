@@ -11,8 +11,8 @@ export class UserProfile{
     level: string;
 
     @ArrayNotEmpty({message:'subject can not be empty!'})
-    @Column('simple-array')
-    subject:string[] ;
+    @Column('simple-array', { default: '' })
+    domain:string[] ;
 
     @Column()
     description: string;
@@ -21,11 +21,6 @@ export class UserProfile{
     otherInterest: string;
 
     @Column()
-    imageUrl: string;
-
-    
-
-
-     
+    imageUrl: string;  
     
 }

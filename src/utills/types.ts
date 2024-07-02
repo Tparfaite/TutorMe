@@ -29,7 +29,7 @@ export type UpdateUserParams = {
 
 export type CreateUserProfileParams = {
     level: string;
-    subject: string[];
+    domain: string[];
     description: string;
     otherInterest: string;
     imageUrl: string;
