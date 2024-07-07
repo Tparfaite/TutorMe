@@ -21,7 +21,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           signOptions:{expiresIn:'8h'}
         })
      
-    }),
+     }),
     
   ],
   controllers: [UsersController],

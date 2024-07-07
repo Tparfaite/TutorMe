@@ -1,38 +1,53 @@
+import { Module, OnModuleInit } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { TutorsModule } from './tutors/tutors.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import * as dotenv from 'dotenv';
-dotenv.config(); 
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { MessageModule } from './message/message.module';
 
-             
-
+import { User } from './users/entities/user.entity';
+import { UserProfile } from './users/entities/profile.entity';
+import { ExamModule } from './exam/exam.module';
+import { UserExamModule } from './user-exam/user-exam.module';
+import { Exam } from './exam/entities/exam.entity';
+import { UserExam } from './user-exam/entities/user-exam.entity';
+import { ExamSeeder } from './exam-seeder';
+import { ExamService } from './exam/exam.service';
 
 @Module({
   imports: [
     UsersModule,
     TutorsModule,
+    TypeOrmModule.forFeature([Exam, UserExam]),
     TypeOrmModule.forRoot({
-    type:'mysql',
-    host:'localhost',
-    port:parseInt(process.env.PORT),
-    username:'root',
-    password:'',
-    database:'tutorMe',
-    entities:['dist/**/*.entity{.ts,.js}'],
-    synchronize:true
+      type: 'mysql',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT) || 3306,
+      username: process.env.DB_USERNAME || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'tutorMe',
+      entities: [User, UserProfile, Exam, UserExam],
+      synchronize: true,
     }),
     AuthModule,
-    ConfigModule.forRoot({isGlobal:true}),
-    MessageModule
- ],
+    ConfigModule.forRoot({ isGlobal: true }),
+    MessageModule,
+    ExamModule,
+    UserExamModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,ExamSeeder,ExamService],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit{
+  constructor(private readonly examSeeder: ExamSeeder) {}
+
+  async onModuleInit() {
+    await this.examSeeder.seed();
+  }
+}

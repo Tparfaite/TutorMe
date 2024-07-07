@@ -85,6 +85,11 @@ export class UsersService {
     return user
   }
 
+  async findUserById(userId:number){
+    const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['userProfile'] });
+    return user
+  }
+
 
 
  

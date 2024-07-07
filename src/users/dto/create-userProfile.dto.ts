@@ -1,6 +1,6 @@
 export class CreateUserProfileDto {
     level: string;
-    subject: string[];
+    domain: string[];
     imageUrl: string;
     otherInterest: string;
     description: string;
