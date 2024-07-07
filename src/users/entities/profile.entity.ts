@@ -17,7 +17,7 @@ export class UserProfile{
     @Column()
     description: string;
 
-    @Column()
+    @Column({nullable:true})
     otherInterest: string;
 
     @Column()

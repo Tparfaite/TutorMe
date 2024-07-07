@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService {
 
+
  constructor(
   @InjectRepository(User) private readonly userRepository:Repository<User> ,
   @InjectRepository(UserProfile) private readonly userProfileRepository: Repository<UserProfile>
@@ -42,8 +43,6 @@ export class UsersService {
 }
 
   
-
-
  async findUsers(){
     return await this.userRepository.find({relations: ['userProfile']})
   }
@@ -62,7 +61,7 @@ export class UsersService {
 
     if(!user){
       throw new HttpException(
-        "USER NOT FOUND, You can't give a profile ",
+        "USER NOT FOUND, You can't give a profile ", 
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -78,6 +77,8 @@ export class UsersService {
     return updatedUser
    
   }
+
+ 
 
 
   async findUserByEmail(email:string){
