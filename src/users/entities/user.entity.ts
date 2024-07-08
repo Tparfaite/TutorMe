@@ -45,6 +45,9 @@ export class User {
    @JoinColumn()
    userProfile: UserProfile
 
+
+   
+
   
 
   

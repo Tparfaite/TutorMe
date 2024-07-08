@@ -19,6 +19,7 @@ import { Exam } from './exam/entities/exam.entity';
 import { UserExam } from './user-exam/entities/user-exam.entity';
 import { ExamSeeder } from './exam-seeder';
 import { ExamService } from './exam/exam.service';
+import { SearchTutorModule } from './search-tutor/search-tutor.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ExamService } from './exam/exam.service';
     MessageModule,
     ExamModule,
     UserExamModule,
+    SearchTutorModule,
   ],
   controllers: [AppController],
   providers: [AppService,ExamSeeder,ExamService],
