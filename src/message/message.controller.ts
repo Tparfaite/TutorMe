@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, NotFoundE
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { error } from 'console';
 
 
 @Controller('message')
@@ -42,14 +43,25 @@ export class MessageController {
 
   @Delete('delete/:id')
   async remove(@Param('id') id: string) {
-    const deletedMessage = await this.messageService.remove(+id)
-    if(!deletedMessage){
-      return {
-        message:"not found"
+    const messageToDelete = await this.messageService.findOneMessage(+id)
+    try{
+      if(messageToDelete){
+        const deletedMessage = await this.messageService.remove(+id);
+        return {
+          message:'Message deleted successfully',
+        }
+      }else {
+        return{
+          message:"Not Found"
+        }
+      }
+    }catch (error){
+      return{
+        message:error
       }
     }
-    return {
-      message:"Message deleted successfully",
-    } 
+    
+   
+   
   }
 }

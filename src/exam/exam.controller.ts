@@ -14,8 +14,9 @@ export class ExamController {
   submitExam(
     @Param('userId') userId: number,
     @Param('examId') examId: number,
-    @Body('userAnswers') userAnswers: string[]
+    @Body('userAnswers') userAnswers: string[],
+    @Body('correctAnswers') correctAnswers:string[]
   ) {
-    return this.examService.submitExam(userId, examId, userAnswers);
+    return this.examService.submitExam(userId, examId, userAnswers,correctAnswers);
   }
 }
