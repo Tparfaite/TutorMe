@@ -20,12 +20,17 @@ import { UserExam } from './user-exam/entities/user-exam.entity';
 import { ExamSeeder } from './exam-seeder';
 import { ExamService } from './exam/exam.service';
 import { SearchTutorModule } from './search-tutor/search-tutor.module';
+import { SocketMessageModule } from './socket-message/socket-message.module';
+import { SocketMessage } from './socket-message/entities/socket-message.entity';
+import { Message } from './message/entities/message.entity';
+import { LikesModule } from './likes/likes.module';
+import { Like } from './likes/entities/like.entity';
 
 @Module({
   imports: [
     UsersModule,
     TutorsModule,
-    TypeOrmModule.forFeature([Exam, UserExam]),
+    TypeOrmModule.forFeature([Exam, UserExam,SocketMessage, Like]),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST || 'localhost',
@@ -33,7 +38,7 @@ import { SearchTutorModule } from './search-tutor/search-tutor.module';
       username: process.env.DB_USERNAME || 'root',
       password: process.env.DB_PASSWORD || '',
       database: process.env.DB_NAME || 'tutorMe',
-      entities: [User, UserProfile, Exam, UserExam],
+      entities: [User, UserProfile, Exam, UserExam, Message, Like],
       synchronize: true,
     }),
     AuthModule,
@@ -42,6 +47,8 @@ import { SearchTutorModule } from './search-tutor/search-tutor.module';
     ExamModule,
     UserExamModule,
     SearchTutorModule,
+    SocketMessageModule,
+    LikesModule,
   ],
   controllers: [AppController],
   providers: [AppService,ExamSeeder,ExamService],

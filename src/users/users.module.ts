@@ -7,6 +7,7 @@ import { UserProfile } from './entities/profile.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Like } from 'src/likes/entities/like.entity';
 
 @Module({
   imports: [
@@ -26,5 +27,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   ],
   controllers: [UsersController],
   providers: [UsersService],
+  exports:[UsersService]
 })
 export class UsersModule {}

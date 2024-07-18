@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserProfile } from "./profile.entity";
+import { Like } from "src/likes/entities/like.entity";
 
 @Entity()
 export class User {
@@ -41,16 +42,19 @@ export class User {
     @Column()
     createdAt:Date;
 
-   @OneToOne(()=>UserProfile)
+   @OneToOne(()=>UserProfile, { cascade: true, onDelete: 'CASCADE' })
    @JoinColumn()
-   userProfile: UserProfile
+   userProfile: UserProfile;
 
+   @OneToMany(() => Like, like => like.tutor, { cascade: true, onDelete: 'CASCADE' })
+   receivedLikes: Like[];
+ 
+   @OneToMany(() => Like, like => like.user)
+   givenLikes: Like[];
 
-   
+   @Column({ default: 0 })
+   likeCount: number;
 
-  
-
-  
    
 
 }

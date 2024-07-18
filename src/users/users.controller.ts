@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Put, BadRequestException, Req, Res, UseGuards, NotFoundException, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Put, BadRequestException, Req, Res, UseGuards, NotFoundException, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -67,7 +67,8 @@ export class UsersController {
     ){
       const user = await this.usersService.findUserByEmail(email);
       if(!user){
-        throw new NotFoundException('User with this email not found');
+        return response.status(HttpStatus.NOT_FOUND).json({ message: 'User with this email not found' });
+        
       }
  
       const unhashedPassword = await bcrypt.compare(password, user.password)
@@ -93,7 +94,7 @@ export class UsersController {
 
       return response.json({ accessToken: accessToken });
     
-    }
+  }
 
   @Get('logout')
   logout(@Res() response:Response):void{
@@ -107,11 +108,41 @@ export class UsersController {
     await this.usersService.updateUser(id, updateUserDto)
   }
 
-
-  @Delete(':id')
-  async deleteById(@Param('id',ParseIntPipe) id:number){
-  await this.usersService.deleteUser(id)
+  @Patch('/update/:id')
+  async updateUser(@Param('id',ParseIntPipe) id:number, @Body() updateUserDetails:UpdateUserDto){
+   return await this.usersService.updateUser(id,updateUserDetails)
   }
+
+  // @Delete('/delete/:id')
+  // async deleteById(@Param('id',ParseIntPipe) id:number) {
+  //   return await this.usersService.deleteUser(id)
+  // }
+
+  @Delete('/delete/:id')
+  async deleteById(@Param('id', ParseIntPipe) id: number) {
+    try {
+      const result = await this.usersService.deleteUser(id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: result.message,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message,
+          
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+
+  // @Delete('/delete/:id')
+  // async deleteById(@Param('id',ParseIntPipe) id:number){
+  // return await this.usersService.deleteUser(id)
+  // }
 
   @Post('/profile/:id')
   async createUserProfile(@Param('id',ParseIntPipe) id:number, @Body() createUserProfileDto:CreateUserProfileDto){

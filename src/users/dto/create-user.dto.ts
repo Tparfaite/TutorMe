@@ -10,4 +10,6 @@ export class CreateUserDto {
     role:string;
     gender:string;
     password:string;
+    receivedLikes:[];
+    givenLikes:[];
 }
