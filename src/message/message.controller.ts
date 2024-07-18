@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, NotFoundException, ParseIntPipe } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { error } from 'console';
 
 
 @Controller('message')
@@ -35,21 +36,28 @@ export class MessageController {
     return this.messageService.findOneMessage(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messageService.update(+id, updateMessageDto);
-  }
+  
 
   @Delete('delete/:id')
   async remove(@Param('id') id: string) {
-    const deletedMessage = await this.messageService.remove(+id)
-    if(!deletedMessage){
-      return {
-        message:"not found"
+    const messageToDelete = await this.messageService.findOneMessage(+id)
+    try{
+      if(messageToDelete){
+        const deletedMessage = await this.messageService.remove(+id);
+        return {
+          message:'Message deleted successfully',
+        }
+      }else {
+        return{
+          message:"Not Found"
+        }
+      }
+    }catch (error){
+      return{
+        message:error
       }
     }
-    return {
-      message:"Message deleted successfully",
-    } 
   }
+
+  
 }

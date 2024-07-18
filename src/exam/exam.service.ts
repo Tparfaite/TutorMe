@@ -13,20 +13,45 @@ export class ExamService {
     private userExamsRepository: Repository<UserExam>
   ) {}
 
-  async generateExam(domain: string, level: string): Promise<Exam> {
-    return this.examsRepository.findOne({ where: { domain, level } });
-  }
 
-  async submitExam(userId: number, examId: number, userAnswers: string[]): Promise<UserExam> {
+  private getRandomQuestions(questions: any[], count: number): any[] {
+    const shuffled = questions.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  }
+  
+
+
+
+  async generateExam(domain: string, level: string): Promise<{exam: Exam, selectedQuestions: any[], correctAnswers: string[]}> {
+   
+    try{
+      const exam = await this.examsRepository.findOne({ where: { domain, level } });
+
+      if (exam && exam.questions.length > 10) {
+        const selectedQuestions = this.getRandomQuestions(exam.questions, 10);
+        const correctAnswers = selectedQuestions.map(question => question.correctAnswer);
+        return { exam, selectedQuestions, correctAnswers };
+      }
+      return { exam, selectedQuestions: exam.questions, correctAnswers: exam.questions.map(question => question.correctAnswer) };
+    }
+    catch(error:any){
+      throw new Error(`Exam with domain ${domain} and level ${level} not found ${error.message}`);
+    }
+
+  }
+  
+
+
+  async submitExam(userId: number, examId: number, userAnswers: string[],correctAnswers:string[]): Promise<UserExam> {
     const exam = await this.examsRepository.findOne({ where: { id: examId } });
-    const correctAnswers = exam.questions.map(q => q.correctAnswer);
+  
     console.log("correct answers",correctAnswers)
     console.log("userAnswers answers",userAnswers)
     const marks = correctAnswers.reduce((score, correctAnswer, idx) => {
       return score + (correctAnswer === userAnswers[idx] ? 1 : 0);
     }, 0);
     console.log("marks",marks)
-    const passed = marks >= (correctAnswers.length * 0.6); // Pass if at least 50% correct
+    const passed = marks >= (correctAnswers.length * 0.6);
     const userExam = this.userExamsRepository.create({ userId, exam, userAnswers, marks, passed });
     return this.userExamsRepository.save(userExam);
   }

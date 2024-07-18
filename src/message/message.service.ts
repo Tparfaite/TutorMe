@@ -21,11 +21,13 @@ export class MessageService {
     return await this.messageRepository.findOne({where:{id}});
   }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
-  }
+  
 
   async remove(id: number):Promise<any> {
     return await this.messageRepository.delete(id);
   }
+
+  
+
+ 
 }
