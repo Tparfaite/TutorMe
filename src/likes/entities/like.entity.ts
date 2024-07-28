@@ -7,10 +7,10 @@ export class Like {
     @PrimaryGeneratedColumn()
     id:number;
 
-    @ManyToOne(() => User, user => user.givenLikes)
+    @ManyToOne(() => User, user => user.givenLikes, {onDelete: 'CASCADE' })
     user: User;
   
-    @ManyToOne(() => User, user => user.receivedLikes)
+    @ManyToOne(() => User, user => user.receivedLikes, {onDelete: 'CASCADE' })
     tutor: User;
 
    

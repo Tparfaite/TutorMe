@@ -49,7 +49,7 @@ export class User {
    @OneToMany(() => Like, like => like.tutor, { cascade: true, onDelete: 'CASCADE' })
    receivedLikes: Like[];
  
-   @OneToMany(() => Like, like => like.user)
+   @OneToMany(() => Like, like => like.user, { cascade: true, onDelete: 'CASCADE' })
    givenLikes: Like[];
 
    @Column({ default: 0 })

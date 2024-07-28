@@ -16,7 +16,7 @@ export class LikesService {
     ){}
 
   
-  async toggleLike(user: User, tutor: User): Promise<Like | void> {
+  async toggleLike(user: User, tutor: User): Promise<Like | void > {
     const existingLike = await this.likeRepository.findOne({ where: { user, tutor } });
    console.log("got likes",existingLike)
     try{

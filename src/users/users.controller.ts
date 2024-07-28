@@ -120,22 +120,30 @@ export class UsersController {
 
   @Delete('/delete/:id')
   async deleteById(@Param('id', ParseIntPipe) id: number) {
-    try {
-      const result = await this.usersService.deleteUser(id);
-      return {
-        statusCode: HttpStatus.OK,
-        message: result.message,
-      };
-    } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message,
-          
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    const user = await this.usersService.findUserById(id);
+   
+    if(user){
+      try {
+        const result = await this.usersService.deleteUser(id);
+        console.log("uuuuuuu",result)
+        return {
+          statusCode: HttpStatus.OK,
+          message: result.message,
+        };
+      } catch (error) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: error.message,
+            
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }else{
+      return "user not found"
     }
+   
   }
 
 

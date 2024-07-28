@@ -8,6 +8,8 @@ import { CreateUserParams, CreateUserProfileParams, UpdateUserParams } from '../
 import { UserProfile } from './entities/profile.entity';
 import * as bcrypt from 'bcrypt';
 import { error } from 'console';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
 export class UsersService {
@@ -22,7 +24,31 @@ export class UsersService {
 
 
  async createUser(userDetails: CreateUserParams){
-  
+
+  const admin={
+    firstName:process.env.AD_FIRSTNAME,
+    lastName:process.env.AD_LASTNAME,
+    email: process.env.AD_EMAIL,
+    phoneNumber: process.env.AD_PHONE,
+    password:process.env.AD_PASSWORD,
+    province:process.env.AD_PROVINCE,
+    district:process.env.AD_DISTRICT,
+    sector: process.env.AD_SECTOR,
+    gender:'male',
+    role: 'admin',
+    createdAt:Date()
+  }
+  const salt = 12;
+  const adminPasswordHash=await bcrypt.hash(admin.password,salt);
+  admin.password=adminPasswordHash;
+
+  const existAdmin=await this.userRepository.findOne({where:{email:admin.email}});
+  console.log("EXISTING ADMIN",existAdmin)
+  if(!existAdmin){
+   const adminToAdd= await this.userRepository.save(admin);
+   console.log("ADMIN OFFICIAL",adminToAdd)
+
+  }
   const existingUser= await this.userRepository.findOne({where:{email:userDetails.email}})
   if(existingUser){
     return{
@@ -30,7 +56,7 @@ export class UsersService {
     }
      
   }
-  const salt = 12;
+ 
   const hashedPassword = await bcrypt.hash(userDetails.password,salt);
   userDetails.password = hashedPassword;
   const newUser = this.userRepository.create({
@@ -64,10 +90,10 @@ export class UsersService {
 
 
   async deleteUser(id:number):Promise<{message:string}>{
-    const user = await this.userRepository.findOne({where:{id},relations: ['userProfile','givenLikes'] })
+    const user = await this.userRepository.findOne({where:{id},relations: ['userProfile','givenLikes','receivedLikes'] })
     try {
       if(user){
-        await this.userRepository.delete({id})
+        await this.userRepository.delete(id)
         return {
           message:"user deleted successfully"
         }
