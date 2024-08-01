@@ -25,33 +25,7 @@ export class UsersController {
     return users
   }
 
-  // @Get('getAll')
-  // @UseGuards(AuthGuardGuard)
-  // async getUsers(@currentUser() user:User) : Promise<User[] | string>{
-  //   console.log('this is user from decorator',user)
-  //   let users:User[];
-  //   users = await this.usersService.findUsers()
-  //   return users
-  //   if(user.role === 'tutor'){
-  //     const parents = users.filter((userfound)=>userfound.role==='parent');
-  //     if(!parents.length){
-  //       console.log("no parent found")
-  //       return []
-  //     }
-  //     return parents;
 
-  //   }else if(user.role === 'parent'){
-  //     const tutors = users.filter((userfound)=>userfound.role==='tutor');
-  //     if(!tutors.length){
-  //       console.log("no tutor found")
-  //       return "No tutor found"
-  //     }
-  //     return tutors
-  //   }else{
-  //    users = await this.usersService.findUsers()
-  //   return users
-  //   }
-  // }
 
   @Post('create')
   async createUser(@Body() createUserDto:CreateUserDto ){
