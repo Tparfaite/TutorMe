@@ -23,52 +23,54 @@ export class UsersService {
 
 
 
- async createUser(userDetails: CreateUserParams){
-
-  const admin={
-    firstName:process.env.AD_FIRSTNAME,
-    lastName:process.env.AD_LASTNAME,
-    email: process.env.AD_EMAIL,
-    phoneNumber: process.env.AD_PHONE,
-    password:process.env.AD_PASSWORD,
-    province:process.env.AD_PROVINCE,
-    district:process.env.AD_DISTRICT,
-    sector: process.env.AD_SECTOR,
-    gender:'male',
-    role: 'admin',
-    createdAt:Date()
-  }
-  const salt = 12;
-  const adminPasswordHash=await bcrypt.hash(admin.password,salt);
-  admin.password=adminPasswordHash;
-
-  const existAdmin=await this.userRepository.findOne({where:{email:admin.email}});
-  console.log("EXISTING ADMIN",existAdmin)
-  if(!existAdmin){
-   const adminToAdd= await this.userRepository.save(admin);
-   console.log("ADMIN OFFICIAL",adminToAdd)
-
-  }
-  const existingUser= await this.userRepository.findOne({where:{email:userDetails.email}})
-  if(existingUser){
-    return{
-      message:"user with this email already exist"
-    }
+  async createUser(userDetails: CreateUserParams) {
+    try {
+    
+      const admin = {
+        firstName: process.env.AD_FIRSTNAME,
+        lastName: process.env.AD_LASTNAME,
+        email: process.env.AD_EMAIL,
+        phoneNumber: process.env.AD_PHONE,
+        password: process.env.AD_PASSWORD,
+        province: process.env.AD_PROVINCE,
+        district: process.env.AD_DISTRICT,
+        sector: process.env.AD_SECTOR,
+        gender: 'male',
+        role: 'admin',
+        createdAt: new Date()
+      };
+  
+      const salt = 12;
+      const adminPasswordHash = await bcrypt.hash(admin.password, salt);
+      admin.password = adminPasswordHash;
+  
      
+      const existAdmin = await this.userRepository.findOne({ where: { email: admin.email } });
+      if (!existAdmin) {
+        await this.userRepository.save(admin);
+      }
+  
+     
+      const existingUser = await this.userRepository.findOne({ where: { email: userDetails.email } });
+      if (existingUser) {
+        throw new Error('User with this email already exists');
+      }
+  
+     
+      const hashedPassword = await bcrypt.hash(userDetails.password, salt);
+      userDetails.password = hashedPassword;
+      const newUser = this.userRepository.create({
+        ...userDetails,
+        createdAt: new Date()
+      });
+      return await this.userRepository.save(newUser);
+  
+    } catch (error) {
+      console.error('Error creating user:', error.message);
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
- 
-  const hashedPassword = await bcrypt.hash(userDetails.password,salt);
-  userDetails.password = hashedPassword;
-  const newUser = this.userRepository.create({
-    ...userDetails, 
-    createdAt: new Date()
-  })
-   return this.userRepository.save(newUser)
-
- 
-
-}
-
+  
   
  async findUsers(){
     return await this.userRepository.find({relations: ['userProfile']})
@@ -84,7 +86,7 @@ export class UsersService {
     }
     await this.userRepository.update(id,updateUserDetails)
     return await this.userRepository.findOne({where:{id}})
-   this.userRepository.update({id},{...updateUserDetails})
+   
   }
 
 
